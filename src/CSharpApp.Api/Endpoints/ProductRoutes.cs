@@ -14,9 +14,9 @@
             .WithName("GetProducts")
             .HasApiVersion(1.0);
 
-            versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts/{id}", async (int id, IProductsService productsService) =>
+            versionedEndpointRouteBuilder.MapGet("api/v{version:apiVersion}/getproducts/{id}", async (int id, IProductsService productsService, IMediator mediator) =>
             {
-                var result = await productsService.GetProductById(id);
+                var result = await mediator.Send(new GetProductQuery(id));
                 if (!result.Success)
                     return Results.BadRequest(result.ErrorMessage);
                 return Results.Ok(result.Data);
