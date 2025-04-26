@@ -20,30 +20,37 @@ public class ProductsService : IProductsService
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
         var res = JsonSerializer.Deserialize<List<Product>>(content);
-        
+
         return res.AsReadOnly();
     }
 
-    public async Task<Product> GetProductById(int Id)
+    public async Task<CallResult<Product>> GetProductById(int Id)
     {
         try
         {
             var response = await _httpClient.GetAsync($"{_restApiSettings.Products}/{Id}");
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorJson = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(errorJson);
+                if (doc.RootElement.TryGetProperty("message", out var errMesage))
+                {
+                    var message = errMesage.GetString();
+                    return CallResult<Product>.Fail(message);
+                }
+                else
+                {
+                    return CallResult<Product>.Fail("Something went wrong");
+                }
+            }
             var content = await response.Content.ReadAsStringAsync();
             var res = JsonSerializer.Deserialize<Product>(content);
 
-            return res;
+            return CallResult<Product>.Ok(res);
         }
-        catch (HttpRequestException ex)
-        {            
-            return null;
-        }
-        catch (Exception)
+        catch (Exception ex)
         {
-
-            throw;
+            return CallResult<Product>.Fail(ex.Message);
         }
-
     }
 }
