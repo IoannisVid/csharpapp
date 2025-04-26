@@ -1,5 +1,3 @@
-using System.Net.Http.Json;
-
 namespace CSharpApp.Application.Products;
 
 public class ProductsService : IProductsService

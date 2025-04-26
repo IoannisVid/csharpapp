@@ -14,6 +14,7 @@ builder.Services.AddHttpConfiguration();
 builder.Services.AddProblemDetails();
 builder.Services.AddApiVersioning();
 builder.Services.AddMediatRConfiguration();
+builder.Services.AddFluentValidationConfiguration();
 
 var app = builder.Build();
 
