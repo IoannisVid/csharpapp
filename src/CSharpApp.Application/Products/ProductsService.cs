@@ -1,3 +1,5 @@
+using CSharpApp.Core.Common;
+
 namespace CSharpApp.Application.Products;
 
 public class ProductsService : IProductsService
@@ -32,7 +34,7 @@ public class ProductsService : IProductsService
             if (!response.IsSuccessStatusCode)
             {
                 var errorJson = await response.Content.ReadAsStringAsync();
-                return GetErrorFromResponse(errorJson);
+                return CallResult<Product>.GetErrorFromResponse("message", errorJson);
             }
             var content = await response.Content.ReadAsStringAsync();
             var res = JsonSerializer.Deserialize<Product>(content);
@@ -53,7 +55,7 @@ public class ProductsService : IProductsService
             if (!response.IsSuccessStatusCode)
             {
                 var errorJson = await response.Content.ReadAsStringAsync();
-                return GetErrorFromResponse(errorJson);
+                return CallResult<Product>.GetErrorFromResponse("message", errorJson);
             }
             var content = await response.Content.ReadAsStringAsync();
             var res = JsonSerializer.Deserialize<Product>(content);
@@ -63,20 +65,6 @@ public class ProductsService : IProductsService
         catch (Exception ex)
         {
             return CallResult<Product>.Fail(ex.Message);
-        }
-    }
-    private CallResult<Product> GetErrorFromResponse(string errorJson)
-    {
-
-        using var doc = JsonDocument.Parse(errorJson);
-        if (doc.RootElement.TryGetProperty("message", out var errMesage))
-        {
-            var message = errMesage.GetString();
-            return CallResult<Product>.Fail(message);
-        }
-        else
-        {
-            return CallResult<Product>.Fail("Something went wrong");
         }
     }
 }

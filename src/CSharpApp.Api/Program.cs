@@ -28,5 +28,6 @@ if (app.Environment.IsDevelopment())
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 versionedEndpointRouteBuilder.MapProductRoutes();
+versionedEndpointRouteBuilder.MapCategoryRoutes();
 
 app.Run();

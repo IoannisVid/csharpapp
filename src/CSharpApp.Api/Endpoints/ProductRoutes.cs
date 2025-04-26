@@ -1,6 +1,4 @@
-﻿using CSharpApp.Application.Products.Commands;
-
-namespace CSharpApp.Api.Endpoints
+﻿namespace CSharpApp.Api.Endpoints
 {
     public static class ProductRoutes
     {
