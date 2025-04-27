@@ -17,7 +17,7 @@
             await _next(context);
             stopwatch.Stop();
             var time = stopwatch.ElapsedMilliseconds;
-            _logger.LogInformation($"Request [{context.Request.Method}] {context.Request.Path} executed in {time} ms");
+            _logger.LogInformation("Request [{method}] {url} executed in {elapsed} ms", context.Request.Method, context.Request.Path, time);
         }
     }
 }

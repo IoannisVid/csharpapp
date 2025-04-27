@@ -1,5 +1,3 @@
-using CSharpApp.Core.Common;
-
 namespace CSharpApp.Application.Products;
 
 public class ProductsService : IProductsService
@@ -18,12 +16,19 @@ public class ProductsService : IProductsService
 
     public async Task<IReadOnlyCollection<Product>> GetProducts()
     {
-        var response = await _httpClient.GetAsync(_restApiSettings.Products);
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync();
-        var res = JsonSerializer.Deserialize<List<Product>>(content);
-
-        return res.AsReadOnly();
+        try
+        {
+            var response = await _httpClient.GetAsync(_restApiSettings.Products);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            var res = JsonSerializer.Deserialize<List<Product>>(content);
+            return res.AsReadOnly();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            throw;
+        }
     }
 
     public async Task<CallResult<Product>> GetProductById(int Id)
@@ -34,15 +39,17 @@ public class ProductsService : IProductsService
             if (!response.IsSuccessStatusCode)
             {
                 var errorJson = await response.Content.ReadAsStringAsync();
-                return CallResult<Product>.GetErrorFromResponse("message", errorJson);
+                var errRes = CallResult<Product>.GetErrorFromResponse("message", errorJson);
+                _logger.LogError("Request [GET] {url} failed: {msg}", response.RequestMessage?.RequestUri?.PathAndQuery.ToString(), errRes.ErrorMessage);
+                return errRes;
             }
             var content = await response.Content.ReadAsStringAsync();
             var res = JsonSerializer.Deserialize<Product>(content);
-
             return CallResult<Product>.Ok(res);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return CallResult<Product>.Fail(ex.Message);
         }
     }
@@ -55,15 +62,17 @@ public class ProductsService : IProductsService
             if (!response.IsSuccessStatusCode)
             {
                 var errorJson = await response.Content.ReadAsStringAsync();
-                return CallResult<Product>.GetErrorFromResponse("message", errorJson);
+                var errRes = CallResult<Product>.GetErrorFromResponse("message", errorJson);
+                _logger.LogError("Request [POST] {url} failed: {msg}", response.RequestMessage?.RequestUri?.PathAndQuery.ToString(), errRes.ErrorMessage);
+                return errRes;
             }
             var content = await response.Content.ReadAsStringAsync();
             var res = JsonSerializer.Deserialize<Product>(content);
-
             return CallResult<Product>.Ok(res);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, ex.Message);
             return CallResult<Product>.Fail(ex.Message);
         }
     }
