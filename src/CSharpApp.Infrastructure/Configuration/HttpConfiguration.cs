@@ -1,17 +1,27 @@
+using CSharpApp.Infrastructure.Authentication;
+
 namespace CSharpApp.Infrastructure.Configuration;
 
 public static class HttpConfiguration
 {
     public static IServiceCollection AddHttpConfiguration(this IServiceCollection services)
     {
+        services.AddTransient<JwtAuthorizationHandler>();
+
         services.AddHttpClient("Client", (sp, client) =>
         {
             var apiSettings = sp.GetRequiredService<IOptions<RestApiSettings>>().Value;
             client.BaseAddress = new Uri(apiSettings.BaseUrl!);
         })
         .AddPolicyHandler((sp, _) => AddRetryPolicy(sp))
-        .ConfigurePrimaryHttpMessageHandler(AddSocketsHandle);
+        .ConfigurePrimaryHttpMessageHandler(AddSocketsHandle)
+        .AddHttpMessageHandler<JwtAuthorizationHandler>();
 
+        services.AddHttpClient("AuthClient", (sp, client) =>
+        {
+            var apiSettings = sp.GetRequiredService<IOptions<RestApiSettings>>().Value;
+            client.BaseAddress = new Uri(apiSettings.BaseUrl!);
+        });
         return services;
     }
 

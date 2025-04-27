@@ -1,3 +1,5 @@
+using CSharpApp.Infrastructure.Authentication;
+
 namespace CSharpApp.Infrastructure.Configuration;
 
 public static class DefaultConfiguration
@@ -12,6 +14,7 @@ public static class DefaultConfiguration
 
         services.AddSingleton<IProductsService, ProductsService>();
         services.AddSingleton<ICategoriesService, CategoriesService>();
+        services.AddSingleton<IAuthService, AuthService>();
 
         return services;
     }
