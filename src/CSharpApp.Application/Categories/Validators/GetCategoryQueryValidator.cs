@@ -6,7 +6,7 @@ namespace CSharpApp.Application.Categories.Validators
     {
         public GetCategoryQueryValidator()
         {
-            RuleFor(x => x.Id).GreaterThan(0).WithMessage("Product ID must be greater than zero");
+            RuleFor(x => x.Id).GreaterThan(0).WithMessage("Category ID must be greater than zero");
         }
     }
 }
