@@ -42,7 +42,6 @@
         {
             try
             {
-
                 if (string.IsNullOrEmpty(_refreshToken))
                 {
                     _accessToken = string.Empty;
